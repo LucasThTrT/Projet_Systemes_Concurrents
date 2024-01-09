@@ -1,0 +1,66 @@
+Pour les ecritures modifier les tubes :
+    sf/tubes.c
+
+Pour les exclusions mutuelles
+    noyau/atomque.c
+    // ICI gérer les conditions bloquantes de ecriture_tube
+    dans le fonctions condtitionAttendre / conditionSignaler ....................;
+Résumé des fonctions dans atomique.c :
+    - On enregistre toutes les exlusions mutuelles dans une liste
+(utile car on peut avoir plusieurs exclusion en écriture par exemple)
+    - Si liste vide : créér la liste avec exclusionMutuelleInitialiser
+    - Si j'ai une exlucion dans la lecture ou l'ecriture dans le tube
+alors j'utilise exclusionMutuelleEntrer pour etre en attente
+    - Si on débloque cette exclusion Mutuelle alors exclusionMutuelleSortir
+
+    - Si je suis dans un état bloquant alors conditionAttendre
+
+
+
+
+Gerer les appels user
+    usr/init-acces-concurrent.c
+
+
+Problèmes :
+
+tubeEcrire : Dans le cas ou le tube est presque plein on va pouvoir écrire dans le tube 
+on se met en eclusion mutuelle est on écrit que 1% de notre nbOctets or ensuite on sort de l'exclusion mutuelle
+donc il faut que ce soit encore lui qui prenne la main a lorsque ConditionAttente soit enlevé
+
+
+FAIT
+
+Je dois comprendre la definition de Exclusion Mutuelle afin de faire le bon appel des fonction 
+exclusionMutuelleEntrer/Sortie !
+-> est dans atomique.h 
+
+verrou = est de la classe Atomique = classe uint32_t qui est unsigned long
+
+tachesEnAttente = est de la classe ListeTache ->
+
+A VOIR SI C'EST CA : 
+Il va falloir une exclusion Mutuelle pour toutes les écritures
+Et une exclusion mutuelle pour toutes les écritures
+
+Car on peut trèes bien écrire et lire en même temps en sachat que la lecture se fait en fin de 
+tube et que l'écriture se fait en début de tube donc il n'y a pas d'impact entre les 2....
+Problème si la lecture demande à lire tout le tube et qu'en même temps il ya a une écriture on peut très bien 
+avoir la moitié de cette écriture dans la première lecture et le reste dans le tube ce qui rend le message
+incompréhensible
+CCL : je pense qu'il faut une exclusion mutuelle identique pour toutes les lectures et écritures
+
+Par contre les états bloquants sont bien séparés entre lecture et écriture car ce n'est pas la même attente 
+entre les 2 états. 
+
+
+
+A FAIRE : 
+j'ai mon écrivain qui est près a écrire mais ne le fait pas car erreur dans la taille 
+de l'écriture dans le tube il me dit que je n'ai 0 octets à écrire !
+
+FAIT
+
+
+TIPS : 
+Regarder avec ^S ^A et autre où en est le systeme
